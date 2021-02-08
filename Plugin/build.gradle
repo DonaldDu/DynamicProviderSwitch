@@ -14,7 +14,7 @@ compileGroovy {
     classes.dependsOn compileGroovy
 }
 
-publishGAV("com.github.DonaldDu.DynamicProviderSwitch:Plugin:1.0")
+publishGAV("com.github.DonaldDu.DynamicProviderSwitch:Plugin:$providerSwitchV")
 
 dependencies {
     implementation gradleApi()
