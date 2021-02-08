@@ -1,0 +1,4 @@
+include ':lib'
+include ':Plugin'
+include ':app'
+rootProject.name = "DynamicProviderSwitch"

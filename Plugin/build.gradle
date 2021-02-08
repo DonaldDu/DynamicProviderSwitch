@@ -1,0 +1,26 @@
+apply plugin: 'kotlin'
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileGroovy {
+    dependsOn tasks.getByPath('compileKotlin')
+    classpath += files(compileKotlin.destinationDir)
+    classes.dependsOn compileGroovy
+}
+
+publishGAV("com.github.DonaldDu.DynamicProviderSwitch:Plugin:1.0")
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.android.tools.build:gradle:4.1.2"
+    implementation 'org.dom4j:dom4j:2.0.2'
+    implementation 'com.gitee.DonaldDu:apk-parser:2.6.10.2'
+    testImplementation 'junit:junit:4.13.1'
+}
