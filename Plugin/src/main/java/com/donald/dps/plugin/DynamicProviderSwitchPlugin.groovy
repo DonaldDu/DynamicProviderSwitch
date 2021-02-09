@@ -5,13 +5,14 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class DynamicProviderSwitchPlugin implements Plugin<Project> {
-    private def QIGSAW = "qigsaw2"
+    private def providerSwitchV = '1.0.3'//fixme must be updated when release
     private Project project
     private DynamicProviderSwitch providerDecorator = new DynamicProviderSwitch()
 
     @Override
     void apply(Project project) {
         this.project = project
+        addDependency()
         if (project.extensions.android != null) createTask()
         else project.afterEvaluate { createTask() }
     }
@@ -25,11 +26,11 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
         project.extensions.android.applicationVariants.all { variant ->
             variant.outputs.all { output ->
                 def manifestProcessorTask = output.getProcessManifestProvider().get()
-                TestProviderTask task = project.tasks.create("testProvider${variant.name.capitalize()}", TestProviderTask)
+                TestProviderTask task = project.tasks.create("checkDisabled${variant.name.capitalize()}Provider", TestProviderTask)
                 task.manifest = manifestProcessorTask.mainMergedManifest.get().asFile
                 task.apkName = output.outputFileName
                 task.apkFolder = new File(project.buildDir, "outputs/apk")
-                task.setGroup(QIGSAW)
+                task.setGroup('verification')
             }
         }
     }
@@ -38,10 +39,9 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
         project.extensions.android.applicationVariants.all { variant ->
             variant.outputs.all { output ->
                 def manifestProcessorTask = output.getProcessManifestProvider().get()
-                ManifestTask task = project.tasks.create("qigsawProcess${variant.name.capitalize()}Manifest", ManifestTask)
+                ManifestTask task = project.tasks.create("processDisable${variant.name.capitalize()}Provider", ManifestTask)
                 task.decorator = providerDecorator
                 task.manifest = getMergedManifests(variant.name)
-                task.setGroup(QIGSAW)
                 manifestProcessorTask.finalizedBy task
             }
         }
@@ -56,6 +56,16 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
         } else {
             //buildDir+intermediates/merged_manifests/{debug|release}/AndroidManifest.xml//4.1.2
             return new File(project.buildDir, "intermediates/merged_manifests/$type/AndroidManifest.xml")
+        }
+    }
+
+    private void addDependency() {
+        def lib = "com.github.DonaldDu.DynamicProviderSwitch:Lib:" + providerSwitchV
+        project.configurations.all { configuration ->
+            def name = configuration.name
+            if (name == "implementation" || name == "compile") {
+                configuration.dependencies.add(project.dependencies.create(lib))
+            }
         }
     }
 }
