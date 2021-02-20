@@ -5,7 +5,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class DynamicProviderSwitchPlugin implements Plugin<Project> {
-    private def providerSwitchV = '1.0.3'//fixme must be updated when release
     private Project project
     private DynamicProviderSwitch providerDecorator = new DynamicProviderSwitch()
 
@@ -54,17 +53,15 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
             manifest = String.format(manifest, type)
             return new File(project.buildDir, manifest)
         } else {
-            //buildDir+intermediates/merged_manifests/{debug|release}/AndroidManifest.xml//4.1.2
+            //buildDir+intermediates/merged_manifests/{debug|release}/AndroidManifest.xml 4.1.2
             return new File(project.buildDir, "intermediates/merged_manifests/$type/AndroidManifest.xml")
         }
     }
 
     private void addDependency() {
-        def lib = "com.github.DonaldDu.DynamicProviderSwitch:Lib:" + providerSwitchV
-        project.configurations.all { configuration ->
-            def name = configuration.name
-            if (name == "implementation" || name == "compile") {
-                configuration.dependencies.add(project.dependencies.create(lib))
+        project.with {
+            dependencies {
+                implementation "com.github.DonaldDu.DynamicProviderSwitch:Lib:1.0.4" //fixme must be updated when release
             }
         }
     }

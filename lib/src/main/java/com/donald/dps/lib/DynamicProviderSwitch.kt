@@ -5,8 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager.*
 import android.content.pm.ProviderInfo
 import android.net.Uri
+import android.os.Build
+import android.util.Log
 
 class DynamicProviderSwitch(private val context: Context, private val log: Boolean) {
+    private val TAG = "ProviderSwitch"
     private val providers = context.dynamicProviders()
 
     /**
@@ -22,40 +25,44 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
     }
 
     private fun Context.startDynamicProvider(provider: ProviderInfo): Boolean {
-        val componentName = try {
-            val p = Class.forName(provider.name)
-            ComponentName(this, p.name)
-        } catch (e: Exception) {
-            null
-        }
-        return if (componentName != null) {
-            packageManager.setComponentEnabledSetting(componentName, COMPONENT_ENABLED_STATE_ENABLED, DONT_KILL_APP)
+        val component = provider.toComponent(this)
+        return if (component != null) {
+            component.enabled = true
             val uri = Uri.parse("content://${provider.authority}")
             try {
                 contentResolver.insert(uri, null)
             } catch (e: Exception) {
             }
-            packageManager.setComponentEnabledSetting(componentName, COMPONENT_ENABLED_STATE_DISABLED, DONT_KILL_APP)
-            if (log) println("startProvider: ${provider.name}, ok")
+            component.enabled = false
+            if (log) Log.i(TAG, "startProvider: ${provider.name}, ok")
             true
         } else {
-            if (log) println("startProvider: ${provider.name}, uninstalled")
+            if (log) Log.i(TAG, "startProvider: ${provider.name}, uninstalled")
             false
         }
     }
 
-    /**
-     * after preloadInstalledSplits
-     * */
+    private fun ProviderInfo.toComponent(context: Context): ComponentName? {
+        return try {
+            val p = Class.forName(name)
+            ComponentName(context, p.name)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private var ComponentName.enabled: Boolean
+        get() = false
+        set(value) {
+            val newState = if (value) COMPONENT_ENABLED_STATE_ENABLED else COMPONENT_ENABLED_STATE_DISABLED
+            context.packageManager.setComponentEnabledSetting(this, newState, DONT_KILL_APP)
+        }
+
     private fun Context.dynamicProviders(): MutableList<ProviderInfo> {
         @Suppress("DEPRECATION")
-        val disabled = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            MATCH_DISABLED_COMPONENTS
-        } else GET_DISABLED_COMPONENTS
-        val info = packageManager.getPackageInfo(applicationInfo.packageName, GET_PROVIDERS or disabled)
-        val ps = info.providers?.filter {
-            !it.enabled && it.authority != null
-        } ?: emptyList()
+        val disabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) MATCH_DISABLED_COMPONENTS else GET_DISABLED_COMPONENTS
+        val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS or disabled)
+        val ps = info.providers?.filter { !it.enabled && it.authority != null } ?: emptyList()
         return ps.toMutableList()
     }
 }
