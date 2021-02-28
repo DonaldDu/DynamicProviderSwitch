@@ -61,7 +61,7 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
     private void addDependency() {
         project.with {
             dependencies {
-                implementation "com.github.DonaldDu.DynamicProviderSwitch:Lib:1.0.5" //fixme must be updated when release
+                implementation "com.github.DonaldDu.DynamicProviderSwitch:Lib:1.0.6" //fixme must be updated when release
             }
         }
     }
