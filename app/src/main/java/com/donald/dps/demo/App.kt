@@ -5,10 +5,17 @@ import android.content.res.Resources
 import com.donald.dps.lib.DynamicProviderSwitch
 
 class App : Application() {
-    private val providerSwitch by lazy { DynamicProviderSwitch(this, true) }
+    override fun onCreate() {
+        super.onCreate()
+        providerSwitch = DynamicProviderSwitch(this, true)
+    }
+
+    private var providerSwitch: DynamicProviderSwitch? = null
     override fun getResources(): Resources {
-//        Qigsaw.onApplicationGetResources(super.getResources())
-        providerSwitch.startDynamicProviders()
+        if (providerSwitch != null) {
+            providerSwitch!!.startDynamicProviders()
+            if (providerSwitch!!.isFinish()) providerSwitch = null
+        }
         return super.getResources()
     }
 }

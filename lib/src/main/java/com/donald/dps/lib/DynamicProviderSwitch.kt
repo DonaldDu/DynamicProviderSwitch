@@ -24,6 +24,10 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         }
     }
 
+    fun isFinish(): Boolean {
+        return providers.isEmpty()
+    }
+
     private fun Context.startDynamicProvider(provider: ProviderInfo): Boolean {
         val component = provider.toComponent(this)
         return if (component != null) {
