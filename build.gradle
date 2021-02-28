@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.4.30"
+    ext.kotlin_version = "1.4.31"
     ext.providerSwitchV = "1.0.4"//only worked for local test, and show tag version, not worked when deploy
     repositories {
         google()
