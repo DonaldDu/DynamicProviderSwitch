@@ -24,9 +24,16 @@ subprojects { project ->
     ext.publishGAV = { String gav ->
         apply plugin: 'maven-publish'
         project.afterEvaluate {
+            if (project.hasProperty('android')) {
+                task sourceJar(type: Jar) {
+                    from android.sourceSets.main.java.srcDirs
+                    classifier "sources"
+                }
+            }
             publishing {
                 publications {
                     maven(MavenPublication) {
+                        if (project.hasProperty('sourceJar')) artifact(sourceJar)
                         if (project.plugins.hasPlugin('com.android.library')) {
                             from components.release
                         } else if (project.plugins.hasPlugin('java-library')) {
