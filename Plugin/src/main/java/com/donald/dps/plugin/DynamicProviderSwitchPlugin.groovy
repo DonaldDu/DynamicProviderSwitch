@@ -1,6 +1,6 @@
 package com.donald.dps.plugin
 
-
+import com.dhy.openusage.OpenUsage
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -14,6 +14,7 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
         addDependency()
         if (project.extensions.android != null) createTask()
         else project.afterEvaluate { createTask() }
+        initOpenUsage()
     }
 
     private void createTask() {
@@ -63,6 +64,14 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
             dependencies {
                 implementation "com.github.DonaldDu.DynamicProviderSwitch:Lib:1.0.5" //fixme must be updated when release
             }
+        }
+    }
+
+    private void initOpenUsage() {
+        project.afterEvaluate {
+            def name = 'DynamicProviderSwitch'
+            def url = 'https://github.com/DonaldDu/DynamicProviderSwitch'
+            OpenUsage.report(project, name, url)
         }
     }
 }

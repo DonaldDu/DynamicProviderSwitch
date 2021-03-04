@@ -25,4 +25,5 @@ dependencies {
     implementation 'org.dom4j:dom4j:2.0.2'
     implementation "com.android.tools.build:gradle:4.1.2"
     implementation 'com.gitee.DonaldDu:apk-parser:2.6.10.2'
+    implementation "com.github.DonaldDu:OpenUsage:1.0.0"
 }
