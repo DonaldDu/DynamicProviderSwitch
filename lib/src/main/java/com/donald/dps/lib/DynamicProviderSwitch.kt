@@ -5,12 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager.*
 import android.content.pm.ProviderInfo
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 
 class DynamicProviderSwitch(private val context: Context, private val log: Boolean) {
     private val TAG = "ProviderSwitch"
-    private val providers = context.dynamicProviders()
+    private val providers = context.providers()
 
     /**
      * called in Application.getResources
@@ -20,7 +19,7 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         val iterator = providers.iterator()
         while (iterator.hasNext()) {
             val provider = iterator.next()
-            if (context.startDynamicProvider(provider)) iterator.remove()
+            if (context.startProvider(provider)) iterator.remove()
         }
     }
 
@@ -28,16 +27,17 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         return providers.isEmpty()
     }
 
-    private fun Context.startDynamicProvider(provider: ProviderInfo): Boolean {
-        val component = provider.toComponent(this)
+    private fun Context.startProvider(provider: ProviderInfo): Boolean {
+        val component = provider.toExistComponent(this)
         return if (component != null) {
             component.enabled = true
             val uri = Uri.parse("content://${provider.authority}")
             try {
                 contentResolver.insert(uri, null)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                component.enabled = false//disabled when error
+                if (log) e.printStackTrace()
             }
-            component.enabled = false
             if (log) Log.i(TAG, "startProvider: ${provider.name}, ok")
             true
         } else {
@@ -46,7 +46,7 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         }
     }
 
-    private fun ProviderInfo.toComponent(context: Context): ComponentName? {
+    private fun ProviderInfo.toExistComponent(context: Context): ComponentName? {
         return try {
             val p = Class.forName(name)
             ComponentName(context, p.name)
@@ -62,11 +62,9 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
             context.packageManager.setComponentEnabledSetting(this, newState, DONT_KILL_APP)
         }
 
-    private fun Context.dynamicProviders(): MutableList<ProviderInfo> {
-        @Suppress("DEPRECATION")
-        val disabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) MATCH_DISABLED_COMPONENTS else GET_DISABLED_COMPONENTS
-        val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS or disabled)
-        val ps = info.providers?.filter { !it.enabled && it.authority != null } ?: emptyList()
+    private fun Context.providers(): MutableList<ProviderInfo> {
+        val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS)
+        val ps = info.providers?.filter { it.authority != null } ?: emptyList()
         return ps.toMutableList()
     }
 }

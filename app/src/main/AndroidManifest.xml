@@ -10,6 +10,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DynamicProviderSwitch">
+        <provider
+            android:name=".NotFoundProvider"
+            android:authorities="a"
+            android:enabled="true"
+            android:exported="false" />
+
+        <provider
+            android:name=".NotFoundProvider1"
+            android:authorities="a1"
+            android:enabled="true"
+            android:exported="false" />
+        <provider
+            android:name=".NotFoundProvider2"
+            android:authorities="a2"
+            android:enabled="true"
+            android:exported="false" />
+        <provider
+            android:name=".NotFoundProvider3"
+            android:authorities="a3"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
