@@ -16,7 +16,7 @@ compileGroovy {
 sourceSets {
     main.groovy { srcDirs += "src/main/java" }
 }
-publishGAV("com.github.DonaldDu.DynamicProviderSwitch:Plugin:$providerSwitchV")
+//publishGAV("com.github.DonaldDu.DynamicProviderSwitch:Plugin:$providerSwitchV")
 
 dependencies {
     implementation gradleApi()
