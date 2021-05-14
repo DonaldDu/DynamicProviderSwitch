@@ -6,12 +6,10 @@ import android.content.res.Resources
 import android.util.Log
 import com.donald.dps.lib.DynamicProviderSwitch
 import com.donald.dps.lib.InstrumentationDelegate
-import me.weishu.reflection.Reflection
 
 class App : Application() {
     override fun attachBaseContext(base: Context?) {
-        Reflection.unseal(base)
-        InstrumentationDelegate.install()
+        if (base != null) InstrumentationDelegate(base)
         super.attachBaseContext(base)
     }
 

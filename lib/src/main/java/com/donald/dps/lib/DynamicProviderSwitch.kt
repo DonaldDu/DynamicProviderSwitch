@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager.*
 import android.content.pm.ProviderInfo
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 
 class DynamicProviderSwitch(private val context: Context, private val log: Boolean) {
@@ -63,7 +64,9 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         }
 
     private fun Context.providers(): MutableList<ProviderInfo> {
-        val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS)
+        @Suppress("DEPRECATION")
+        val disabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) MATCH_DISABLED_COMPONENTS else GET_DISABLED_COMPONENTS
+        val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS or disabled)
         val ps = info.providers?.filter { it.authority != null } ?: emptyList()
         return ps.toMutableList()
     }
