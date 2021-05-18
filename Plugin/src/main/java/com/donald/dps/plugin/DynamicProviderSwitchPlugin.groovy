@@ -11,7 +11,6 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         this.project = project
-        addDependency()
         if (project.extensions.android != null) createTask()
         else project.afterEvaluate { createTask() }
         initOpenUsage()
@@ -56,14 +55,6 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
         } else {
             //buildDir+intermediates/merged_manifests/{debug|release}/AndroidManifest.xml 4.1.2
             return new File(project.buildDir, "intermediates/merged_manifests/$type/AndroidManifest.xml")
-        }
-    }
-
-    private void addDependency() {
-        project.with {
-            dependencies {
-                implementation "com.github.DonaldDu.DynamicProviderSwitch:Lib:1.0.6" //fixme must be updated when release
-            }
         }
     }
 

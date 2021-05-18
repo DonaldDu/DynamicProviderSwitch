@@ -8,9 +8,9 @@ import com.donald.dps.lib.DynamicProviderSwitch
 import com.donald.dps.lib.InstrumentationDelegate
 
 class App : Application() {
-    override fun attachBaseContext(base: Context?) {
-        if (base != null) InstrumentationDelegate(base)
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
+        InstrumentationDelegate()
     }
 
     override fun onCreate() {

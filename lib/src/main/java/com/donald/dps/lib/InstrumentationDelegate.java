@@ -2,24 +2,26 @@ package com.donald.dps.lib;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
-import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import org.chickenhook.restrictionbypass.Unseal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import me.weishu.reflection.Reflection;
-
 
 public class InstrumentationDelegate extends Instrumentation {
     private static final String TAG = "InstrumentationDelegate";
 
-    public InstrumentationDelegate(@NonNull Context context) {
-        Reflection.unseal(context);
-        install();
+    public InstrumentationDelegate() {
+        try {
+            Unseal.unseal();
+            install();
+        } catch (Exception e) {
+            installResult(false);
+            Log.e(TAG, "Unable to unseal hidden api access", e);
+        }
     }
 
     @Override
@@ -42,15 +44,31 @@ public class InstrumentationDelegate extends Instrumentation {
             Instrumentation newInstrumentation = this;
 
             Field[] fields = Instrumentation.class.getDeclaredFields();
+            int count = 0;
             for (Field field : fields) {
                 if (!Modifier.isStatic(field.getModifiers())) {
+                    count++;
                     field.setAccessible(true);
                     field.set(newInstrumentation, field.get(oldInstrumentation));
                 }
             }
-            mInstrumentationF.set(currentActivityThread, newInstrumentation);
+            if (count > 0) {
+                mInstrumentationF.set(currentActivityThread, newInstrumentation);
+                Log.i(TAG, "copy Instrumentation fieldCount=" + count);
+                installResult(true);
+            } else {
+                Log.e(TAG, "copy Instrumentation failed");
+                installResult(false);
+            }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
+    }
+
+    /**
+     * report install result for user app
+     */
+    protected void installResult(boolean installed) {
+
     }
 }

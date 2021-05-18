@@ -8,7 +8,11 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 
-class DynamicProviderSwitch(private val context: Context, private val log: Boolean) {
+open class DynamicProviderSwitch(
+    private val context: Context,
+    private val log: Boolean,
+    private val filter: (ProviderInfo) -> Boolean = { it.authority != null }
+) {
     private val TAG = "ProviderSwitch"
     private val providers = context.providers()
 
@@ -28,31 +32,36 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         return providers.isEmpty()
     }
 
+    /**
+     * @return start successful or not
+     * */
     private fun Context.startProvider(provider: ProviderInfo): Boolean {
-        val component = provider.toExistComponent(this)
-        return if (component != null) {
+        val component = ComponentName(this, provider.name)
+        return try {
+            component.enabled = false
+            assert(Class.forName(provider.name).name == provider.name)
             component.enabled = true
             val uri = Uri.parse("content://${provider.authority}")
-            try {
-                contentResolver.insert(uri, null)
-            } catch (e: Throwable) {
-                component.enabled = false//disabled when error
-                if (log) e.printStackTrace()
-            }
+            contentResolver.insert(uri, null)
             if (log) Log.i(TAG, "startProvider: ${provider.name}, ok")
             true
-        } else {
-            if (log) Log.i(TAG, "startProvider: ${provider.name}, uninstalled")
-            false
-        }
-    }
-
-    private fun ProviderInfo.toExistComponent(context: Context): ComponentName? {
-        return try {
-            val p = Class.forName(name)
-            ComponentName(context, p.name)
-        } catch (e: Exception) {
-            null
+        } catch (e: Throwable) {
+            when (e) {
+                is ClassNotFoundException -> false
+                is UnsupportedOperationException -> {
+                    if (log) Log.i(TAG, "startProvider: ${provider.name}, ok")
+                    true
+                }
+                else -> {
+                    if (log) {
+                        Log.i(TAG, "startProvider: ${provider.name}, ok")
+                        e.printStackTrace()
+                    }
+                    true
+                }
+            }
+        } finally {
+            component.enabled = false
         }
     }
 
@@ -67,7 +76,7 @@ class DynamicProviderSwitch(private val context: Context, private val log: Boole
         @Suppress("DEPRECATION")
         val disabled = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) MATCH_DISABLED_COMPONENTS else GET_DISABLED_COMPONENTS
         val info = packageManager.getPackageInfo(packageName, GET_PROVIDERS or disabled)
-        val ps = info.providers?.filter { it.authority != null } ?: emptyList()
+        val ps = info.providers?.filter(filter) ?: emptyList()
         return ps.toMutableList()
     }
 }
