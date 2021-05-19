@@ -2,6 +2,7 @@ package com.donald.dps.lib;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
+import android.os.Build;
 import android.util.Log;
 
 import org.chickenhook.restrictionbypass.Unseal;
@@ -16,7 +17,7 @@ public class InstrumentationDelegate extends Instrumentation {
 
     public InstrumentationDelegate() {
         try {
-            Unseal.unseal();
+            if (Build.VERSION.SDK_INT >= 28) Unseal.unseal();
             install();
         } catch (Exception e) {
             installResult(false);
