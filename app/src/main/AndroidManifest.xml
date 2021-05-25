@@ -13,7 +13,7 @@
         <provider
             android:name=".NotFoundProvider"
             android:authorities="a"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="false" />
 
         <provider

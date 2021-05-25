@@ -11,9 +11,20 @@ import android.util.Log
 open class DynamicProviderSwitch(
     private val context: Context,
     private val log: Boolean,
-    private val filter: (ProviderInfo) -> Boolean = { it.authority != null }
+    filter: ((ProviderInfo) -> Boolean)? = null
 ) {
     private val TAG = "ProviderSwitch"
+    private val filter: (ProviderInfo) -> Boolean = filter ?: {
+        if (log) Log.i(TAG, "filter -> ${it.name}")
+        if (it.authority != null) {
+            try {
+                //install Qigsaw之前找不到类，则为 DynamicProvider
+                !it.enabled || Class.forName(it.name).name != it.name
+            } catch (e: Exception) {
+                true
+            }
+        } else false
+    }
     private val providers = context.providers()
 
     /**

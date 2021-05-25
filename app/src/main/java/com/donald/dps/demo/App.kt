@@ -5,12 +5,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.Log
 import com.donald.dps.lib.DynamicProviderSwitch
-import com.donald.dps.lib.InstrumentationDelegate
 
 class App : Application() {
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-        InstrumentationDelegate()
+//        InstrumentationDelegate()
     }
 
     override fun onCreate() {

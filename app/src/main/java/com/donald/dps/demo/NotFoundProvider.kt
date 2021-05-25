@@ -5,7 +5,9 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
+import androidx.annotation.Keep
 
+@Keep
 class NotFoundProvider : ContentProvider() {
     init {
         Log.i(TAG, "NotFoundProvider init")
