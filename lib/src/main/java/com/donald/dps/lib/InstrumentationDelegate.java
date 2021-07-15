@@ -42,6 +42,11 @@ public class InstrumentationDelegate extends Instrumentation {
             Field mInstrumentationF = currentActivityThread.getClass().getDeclaredField("mInstrumentation");
             mInstrumentationF.setAccessible(true);
             Instrumentation oldInstrumentation = (Instrumentation) mInstrumentationF.get(currentActivityThread);
+            if (oldInstrumentation == null || !oldInstrumentation.getClass().getName().equals("android.app.Instrumentation")) {
+                Log.e(TAG, "copy Instrumentation canceled");
+                installResult(false);
+                return;
+            }
             Instrumentation newInstrumentation = this;
 
             Field[] fields = Instrumentation.class.getDeclaredFields();

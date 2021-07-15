@@ -16,7 +16,7 @@ class App : Application() {
         Log.i(TAG, "Application onCreate")
         super.onCreate()
         providerSwitch = DynamicProviderSwitch(this, true)
-        providerSwitch?.startDynamicProviders()
+        providerSwitch!!.startDynamicProviders()
     }
 
     private var providerSwitch: DynamicProviderSwitch? = null
