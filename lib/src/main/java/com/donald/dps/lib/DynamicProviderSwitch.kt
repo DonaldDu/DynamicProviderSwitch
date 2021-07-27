@@ -18,8 +18,7 @@ open class DynamicProviderSwitch(
         if (log) Log.i(TAG, "filter -> ${it.name}")
         if (it.authority != null) {
             try {
-                //install Qigsaw之前找不到类，则为 DynamicProvider
-                Class.forName(it.name).name != it.name
+                !it.enabled || Class.forName(it.name).name != it.name
             } catch (e: Exception) {
                 if (log) Log.i(TAG, "DynamicProvider -> ${it.name}")
                 true
