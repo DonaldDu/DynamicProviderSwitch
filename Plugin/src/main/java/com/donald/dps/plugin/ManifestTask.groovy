@@ -1,13 +1,14 @@
 package com.donald.dps.plugin
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 class ManifestTask extends DefaultTask {
-    @Input
+    @Internal
     DynamicProviderSwitch decorator
-    @Input
+    @InputFile
     File manifest
 
     @TaskAction
