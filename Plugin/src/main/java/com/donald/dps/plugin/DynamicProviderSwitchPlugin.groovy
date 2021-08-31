@@ -6,12 +6,11 @@ import org.gradle.api.Project
 
 class DynamicProviderSwitchPlugin implements Plugin<Project> {
     private Project project
-    private DynamicProviderSwitch providerDecorator = new DynamicProviderSwitch()
 
     @Override
     void apply(Project project) {
         this.project = project
-        if (project.extensions.android != null) createTask()
+        if (project.hasProperty('android')) createTask()
         else project.afterEvaluate { createTask() }
         initOpenUsage()
     }
@@ -39,7 +38,6 @@ class DynamicProviderSwitchPlugin implements Plugin<Project> {
             variant.outputs.all { output ->
                 def manifestProcessorTask = output.getProcessManifestProvider().get()
                 ManifestTask task = project.tasks.create("processDisable${variant.name.capitalize()}Provider", ManifestTask)
-                task.decorator = providerDecorator
                 task.manifest = getMergedManifests(variant.name)
                 manifestProcessorTask.finalizedBy task
             }

@@ -10,13 +10,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 
-class DynamicProviderSwitch {
+object DynamicProviderSwitch {
     private fun File.writeXML(doc: Document) {
         val writer = XMLWriter(OutputStreamWriter(FileOutputStream(this)))
         writer.write(doc)
         writer.close()
     }
 
+    @JvmStatic
     fun updateSelf(manifest: File) {
         if (!manifest.exists() || manifest.length() == 0L) return
         var update = false
@@ -31,7 +32,6 @@ class DynamicProviderSwitch {
         }
         if (update) manifest.writeXML(document)
     }
-
 }
 
 private val enabledQName = QName.get("android:enabled", "http://schemas.android.com/apk/res/android")
