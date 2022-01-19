@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i("MyInstrumentation", "onCreate" )
+        Log.i("MainActivity", "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btEnabled.setOnClickListener {
@@ -21,8 +22,18 @@ class MainActivity : AppCompatActivity() {
             clearApplicationUserData()
         }
         btCrash.setOnClickListener {
-            println(1/0)
+            println(1 / 0)
         }
+
+        btStartProvider.setOnClickListener {
+//            HookUtil.initProvider(this)
+            startProvider()
+        }
+    }
+
+    private fun startProvider() {
+        val uri = Uri.parse("content://a")
+        contentResolver.insert(uri, null)
     }
 
     @SuppressLint("PrivateApi")
