@@ -6,6 +6,7 @@ import org.dom4j.Element
 import org.dom4j.QName
 import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
+import org.gradle.api.GradleException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
@@ -19,7 +20,9 @@ object DynamicProviderSwitch {
 
     @JvmStatic
     fun updateSelf(manifest: File) {
-        if (!manifest.exists() || manifest.length() == 0L) return
+        if (!manifest.exists() || manifest.length() == 0L) {
+            throw GradleException("manifest file not found:${manifest.absolutePath}")
+        }
         var update = false
         val saxReader = SAXReader()
         val document = saxReader.read(manifest)
