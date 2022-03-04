@@ -6,7 +6,7 @@ import android.util.Log
 
 class App : Application() {
     override fun attachBaseContext(base: Context) {
-        HookUtil.attachContext()
+//        HookUtil.attachContext()
         super.attachBaseContext(base)
 //        InstrumentationDelegate()
     }

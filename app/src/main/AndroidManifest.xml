@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.donald.dps.demo">
 
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:appComponentFactory="com.donald.dps.demo.HookAppComponentFactory"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DynamicProviderSwitch">
+        android:theme="@style/Theme.DynamicProviderSwitch"
+        tools:replace="android:appComponentFactory">
         <provider
-            android:name=".NotFoundProvider"
-            android:authorities="a"
+            android:name=".OkProvider"
+            android:authorities="${applicationId}.a"
             android:exported="false" />
 
         <provider
             android:name=".NotFoundProvider1"
-            android:authorities="a1"
+            android:authorities="${applicationId}.a1"
             android:enabled="true"
             android:exported="false" />
         <provider
             android:name=".NotFoundProvider2"
-            android:authorities="a2"
-            android:enabled="true"
+            android:authorities="${applicationId}.a2"
+            android:enabled="false"
             android:exported="false" />
         <provider
             android:name=".NotFoundProvider3"
-            android:authorities="a3"
+            android:authorities="${applicationId}.a3"
             android:enabled="true"
             android:exported="false" />
 

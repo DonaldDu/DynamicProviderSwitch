@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.content.pm.ProviderInfo
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,14 +27,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         btStartProvider.setOnClickListener {
-//            HookUtil.initProvider(this)
-            startProvider()
+            val uri = Uri.parse("content://${packageName}.a")
+            contentResolver.insert(uri, null)
+        }
+        btStartProvider1.setOnClickListener {
+            val NotFoundProvider1 = "${packageName}.NotFoundProvider1"
+            val p = ContentProviderProxy.providers.find { it.realContentProviderClassName == NotFoundProvider1 }!!
+            p.realContentProviderClassName = EmptyProvider::class.java.name
+
+            val uri = Uri.parse("content://${packageName}.a1")
+            contentResolver.insert(uri, null)
+        }
+        btInitProvider.setOnClickListener {
+            HookUtil.providers.removeAll(disabledProviderFilter)
+            HookUtil.initProvider(this)
         }
     }
 
-    private fun startProvider() {
-        val uri = Uri.parse("content://a")
-        contentResolver.insert(uri, null)
+    private val disabledProviderFilter: (ProviderInfo) -> Boolean = {
+        Log.i(TAG, "ProviderFilter filter -> ${it.name}")
+        if (it.authority != null) {
+            if (!it.enabled) {
+                Log.i(TAG, "ProviderFilter disabled-> ${it.name}")
+                false
+            } else {
+                try {
+                    Class.forName(it.name).name != it.name
+                } catch (e: ClassNotFoundException) {
+                    Log.i(TAG, "ProviderFilter ClassNotFoundException-> ${it.name}")
+                    true
+                }
+            }
+        } else {
+            Log.i(TAG, "ProviderFilter null authority -> ${it.name}")
+            false
+        }
     }
 
     @SuppressLint("PrivateApi")

@@ -8,9 +8,9 @@ import android.util.Log
 import androidx.annotation.Keep
 
 @Keep
-class NotFoundProvider : ContentProvider() {
+class EmptyProvider : ContentProvider() {
     init {
-        Log.i(TAG, "NotFoundProvider init")
+        Log.i(TAG, "${javaClass.name} init")
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
@@ -22,25 +22,20 @@ class NotFoundProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
+        Log.i(TAG, "${javaClass.name} insert")
         return null
     }
 
     override fun onCreate(): Boolean {
-        Log.i(TAG, "NotFoundProvider onCreate currentThread:" + Thread.currentThread().id)
+        Log.i(TAG, "${javaClass.name} onCreate currentThread:" + Thread.currentThread().id)
         return true
     }
 
-    override fun query(
-        uri: Uri, projection: Array<String>?, selection: String?,
-        selectionArgs: Array<String>?, sortOrder: String?
-    ): Cursor? {
+    override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         return null
     }
 
-    override fun update(
-        uri: Uri, values: ContentValues?, selection: String?,
-        selectionArgs: Array<String>?
-    ): Int {
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?): Int {
         return 0
     }
 }

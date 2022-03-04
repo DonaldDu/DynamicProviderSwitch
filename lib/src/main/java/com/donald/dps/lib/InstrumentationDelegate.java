@@ -17,7 +17,7 @@ public class InstrumentationDelegate extends Instrumentation {
 
     public InstrumentationDelegate() {
         try {
-            if (Build.VERSION.SDK_INT >= 28) Unseal.unseal();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) Unseal.unseal();
             install();
         } catch (Exception e) {
             installResult(false);

@@ -21,10 +21,25 @@
         android:layout_height="wrap_content"
         android:text="crash"
         android:textAllCaps="false" />
+
     <Button
         android:id="@+id/btStartProvider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="StartProvider"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btStartProvider1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="StartProvider(NotFoundProvider1)"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btInitProvider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="initProvider"
         android:textAllCaps="false" />
 </LinearLayout>
