@@ -19,17 +19,17 @@
         <provider
             android:name=".NotFoundProvider1"
             android:authorities="a1"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="false" />
         <provider
             android:name=".NotFoundProvider2"
             android:authorities="a2"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="false" />
         <provider
             android:name=".NotFoundProvider3"
             android:authorities="a3"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="false" />
 
         <activity android:name=".MainActivity">
