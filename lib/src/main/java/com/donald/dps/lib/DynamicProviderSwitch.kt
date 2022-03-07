@@ -16,15 +16,13 @@ open class DynamicProviderSwitch(
     private val TAG = "ProviderSwitch"
     private val filter: (ProviderInfo) -> Boolean = filter ?: {
         if (log) Log.i(TAG, "filter -> ${it.name}")
-        if (it.authority != null) {
-            try {
-                !it.enabled || Class.forName(it.name).name != it.name
-            } catch (e: Exception) {
-                if (log) Log.i(TAG, "DynamicProvider -> ${it.name}")
-                true
-            }
-        } else false
+        it.isDisabled
     }
+
+    init {
+        compatDynamicProvider()
+    }
+
     private val providers = context.providers()
 
     /**
@@ -39,6 +37,10 @@ open class DynamicProviderSwitch(
         }
     }
 
+    private fun compatDynamicProvider() {
+        HookUtil.compatDynamicProvider(context)
+    }
+
     fun isFinish(): Boolean {
         return providers.isEmpty()
     }
@@ -47,11 +49,9 @@ open class DynamicProviderSwitch(
      * @return start successful or not
      * */
     private fun Context.startProvider(provider: ProviderInfo): Boolean {
-        val component = ComponentName(this, provider.name)
+        ComponentName(this, provider.name).enable(context, true)
         return try {
-            component.enabled = false
-            assert(Class.forName(provider.name).name == provider.name)
-            component.enabled = true
+            assert(Class.forName(provider.name).name.isNotEmpty())
             val uri = Uri.parse("content://${provider.authority}")
             contentResolver.insert(uri, null)
             if (log) Log.i(TAG, "startProvider: ${provider.name}, ok")
@@ -71,17 +71,8 @@ open class DynamicProviderSwitch(
                     true
                 }
             }
-        } finally {
-            component.enabled = false
         }
     }
-
-    private var ComponentName.enabled: Boolean
-        get() = false
-        set(value) {
-            val newState = if (value) COMPONENT_ENABLED_STATE_ENABLED else COMPONENT_ENABLED_STATE_DISABLED
-            context.packageManager.setComponentEnabledSetting(this, newState, DONT_KILL_APP)
-        }
 
     private fun Context.providers(): MutableList<ProviderInfo> {
         @Suppress("DEPRECATION")
@@ -92,6 +83,19 @@ open class DynamicProviderSwitch(
     }
 }
 
+internal fun ComponentName.enable(context: Context, enabled: Boolean) {
+    val newState = if (enabled) COMPONENT_ENABLED_STATE_ENABLED else COMPONENT_ENABLED_STATE_DISABLED
+    context.packageManager.setComponentEnabledSetting(this, newState, DONT_KILL_APP)
+}
 
-
+internal val ProviderInfo.isDisabled: Boolean
+    get() {
+        return if (authority != null) {
+            try {
+                !enabled || Class.forName(name).name.isEmpty()
+            } catch (e: Exception) {
+                true
+            }
+        } else false
+    }
 

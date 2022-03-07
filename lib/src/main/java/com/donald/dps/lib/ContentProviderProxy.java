@@ -1,28 +1,5 @@
-/*
- * MIT License
- *
- * Copyright (c) 2019-present, iQIYI, Inc. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
-package com.donald.dps.demo;
+package com.donald.dps.lib;
 
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
@@ -39,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,24 +25,13 @@ import androidx.annotation.RestrictTo;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ContentProviderProxy extends ContentProvider {
-    public static final List<ContentProviderProxy> providers = new ArrayList<>();
+    private static final String TAG = "ContentProviderProxy";
     private ContentProvider realContentProvider;
-
-    private static final String NAME_INFIX = "_Decorated_";
-
     private ProviderInfo providerInfo;
-
     public String realContentProviderClassName;
-
-    private String splitName;
-
-    public ContentProviderProxy() {
-        providers.add(this);
-    }
 
     protected ContentProvider getRealContentProvider() {
         return realContentProvider;
@@ -74,46 +41,40 @@ public class ContentProviderProxy extends ContentProvider {
         if (realContentProviderClassName == null) {
             throw new IllegalArgumentException("Unable to read real content-provider for " + getClass().getName());
         }
-        Throwable error = null;
         try {
             realContentProvider = (ContentProvider) classLoader.loadClass(realContentProviderClassName).newInstance();
             realContentProvider.attachInfo(getContext(), providerInfo);
-        } catch (IllegalAccessException e) {
-            error = e;
-        } catch (InstantiationException e) {
-            error = e;
-        } catch (ClassNotFoundException e) {
-            error = e;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public boolean onCreate() {
+        if (BuildConfig.DEBUG) Log.i(TAG, "ProviderProxy onCreate ->" + realContentProviderClassName);
         return true;
     }
 
-    protected boolean checkRealContentProviderInstallStatus(String splitName) {
-        createAndActivateRealContentProvider(getClass().getClassLoader());
-        return realContentProvider != null;
+    protected boolean checkRealContentProviderInstallStatus() {
+        if (realContentProvider != null) {
+            return true;
+        } else {
+            createAndActivateRealContentProvider(getClass().getClassLoader());
+            return realContentProvider != null;
+        }
     }
 
     @Override
     public void attachInfo(Context context, ProviderInfo info) {
+        realContentProviderClassName = info.name;
         providerInfo = info;
         super.attachInfo(context, info);
-//        String className = getClass().getName();
-//        String[] cuts = className.split(NAME_INFIX);
-//        this.realContentProviderClassName = cuts[0];
-//        this.splitName = cuts[1];
-//        super.attachInfo(context, info);
-//        this.providerInfo = new ProviderInfo(info);
-//        AABExtension.getInstance().put(splitName, this);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             realContentProvider.onConfigurationChanged(newConfig);
         }
     }
@@ -121,7 +82,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.query(uri, projection, selection, selectionArgs, sortOrder);
         }
         return null;
@@ -131,7 +92,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable Bundle queryArgs, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.query(uri, projection, queryArgs, cancellationSignal);
         }
         return super.query(uri, projection, queryArgs, cancellationSignal);
@@ -141,7 +102,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
         }
         return super.query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
@@ -150,7 +111,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.getType(uri);
         }
         return null;
@@ -159,7 +120,7 @@ public class ContentProviderProxy extends ContentProvider {
     @NonNull
     @Override
     public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.applyBatch(operations);
         }
         return super.applyBatch(operations);
@@ -179,7 +140,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Uri uncanonicalize(@NonNull Uri url) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.uncanonicalize(url);
         }
         return super.uncanonicalize(url);
@@ -188,7 +149,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openAssetFile(uri, mode);
         }
         return super.openAssetFile(uri, mode);
@@ -198,7 +159,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openAssetFile(uri, mode, signal);
         }
         return super.openAssetFile(uri, mode, signal);
@@ -208,7 +169,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openTypedAssetFile(@NonNull Uri uri, @NonNull String mimeTypeFilter, @Nullable Bundle opts) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openTypedAssetFile(uri, mimeTypeFilter, opts);
         }
         return super.openTypedAssetFile(uri, mimeTypeFilter, opts);
@@ -218,7 +179,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openTypedAssetFile(@NonNull Uri uri, @NonNull String mimeTypeFilter, @Nullable Bundle opts, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openTypedAssetFile(uri, mimeTypeFilter, opts, signal);
         }
         return super.openTypedAssetFile(uri, mimeTypeFilter, opts, signal);
@@ -227,7 +188,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openFile(uri, mode);
         }
         return super.openFile(uri, mode);
@@ -237,7 +198,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openFile(uri, mode, signal);
         }
         return super.openFile(uri, mode, signal);
@@ -246,7 +207,7 @@ public class ContentProviderProxy extends ContentProvider {
     @NonNull
     @Override
     public <T> ParcelFileDescriptor openPipeHelper(@NonNull Uri uri, @NonNull String mimeType, @Nullable Bundle opts, @Nullable T args, @NonNull PipeDataWriter<T> func) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.openPipeHelper(uri, mimeType, opts, args, func);
         }
         return super.openPipeHelper(uri, mimeType, opts, args, func);
@@ -255,7 +216,7 @@ public class ContentProviderProxy extends ContentProvider {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean refresh(Uri uri, @Nullable Bundle args, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.refresh(uri, args, cancellationSignal);
         }
         return super.refresh(uri, args, cancellationSignal);
@@ -264,7 +225,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.call(method, arg, extras);
         }
         return super.call(method, arg, extras);
@@ -273,7 +234,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public String[] getStreamTypes(@NonNull Uri uri, @NonNull String mimeTypeFilter) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.getStreamTypes(uri, mimeTypeFilter);
         }
         return super.getStreamTypes(uri, mimeTypeFilter);
@@ -282,7 +243,8 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (BuildConfig.DEBUG) Log.i(TAG, "Proxy insert ->authority " + providerInfo.authority);
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.insert(uri, values);
         }
         return null;
@@ -306,7 +268,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.bulkInsert(uri, values);
         }
         return super.bulkInsert(uri, values);
@@ -314,7 +276,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.delete(uri, selection, selectionArgs);
         }
         return 0;
@@ -322,7 +284,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        if (checkRealContentProviderInstallStatus(splitName)) {
+        if (checkRealContentProviderInstallStatus()) {
             return realContentProvider.update(uri, values, selection, selectionArgs);
         }
         return 0;

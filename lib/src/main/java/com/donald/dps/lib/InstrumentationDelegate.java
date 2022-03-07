@@ -10,10 +10,12 @@ import org.chickenhook.restrictionbypass.Unseal;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 
 public class InstrumentationDelegate extends Instrumentation {
     private static final String TAG = "InstrumentationDelegate";
+    public static List<String> providerClasses = null;
 
     public InstrumentationDelegate() {
         try {
@@ -28,7 +30,22 @@ public class InstrumentationDelegate extends Instrumentation {
     @Override
     public boolean onException(Object obj, Throwable e) {
         Log.e(TAG, "Instrumentation.onException -> " + e.getMessage());
-        return e instanceof ClassNotFoundException;
+        if (e instanceof ClassNotFoundException && providerClasses != null) {
+            String msg = e.getMessage();
+            if (msg != null) {
+                String providerClass = getNotFoundClass(msg);
+                return providerClasses.contains(providerClass);//return handled or not
+            }
+        }
+        return false;
+    }
+
+    private String getNotFoundClass(String msg) {
+        int start = msg.indexOf("\"");
+        if (start == -1) return null;
+        int end = msg.indexOf("\"", start + 1);
+        if (end == -1) return null;
+        return msg.substring(start + 1, end);
     }
 
     private void install() {
