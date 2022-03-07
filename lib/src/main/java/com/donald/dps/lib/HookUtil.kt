@@ -20,7 +20,8 @@ internal object HookUtil {
 
     /**
      * api>=28 -> HookProviderFactory & ContentProviderProxy,
-     * else disable Provider
+     * else disable Provider.
+     * must call in Application#attachBaseContext
      * */
     fun compatDynamicProvider(base: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {

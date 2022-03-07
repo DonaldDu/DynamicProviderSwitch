@@ -8,6 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 
+/**
+ * init DynamicProviderSwitch in Application#attachBaseContext
+ * */
 open class DynamicProviderSwitch(
     private val context: Context,
     private val log: Boolean,
