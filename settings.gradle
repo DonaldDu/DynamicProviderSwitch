@@ -1,4 +1,4 @@
-include ':lib'
-include ':Plugin'
 include ':app'
+include ':lib'
+//include ':Plugin'
 rootProject.name = "DynamicProviderSwitch"

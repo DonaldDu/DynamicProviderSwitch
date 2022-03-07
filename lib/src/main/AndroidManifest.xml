@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.donald.dps.lib">
 
-    <application android:appComponentFactory="com.donald.dps.lib.HookProviderFactory">
+    <uses-sdk tools:overrideLibrary="org.chickenhook.restrictionbypass" />
+    <application
+        android:appComponentFactory="com.donald.dps.lib.HookProviderFactory"
+        tools:replace="android:appComponentFactory">
         <provider
             android:name="org.chickenhook.restrictionbypass.BypassProvider"
             android:authorities="${applicationId}.restrictionbypass"
