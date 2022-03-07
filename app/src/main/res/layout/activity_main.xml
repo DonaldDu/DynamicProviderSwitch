@@ -12,7 +12,7 @@
         android:id="@+id/btEnabled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="enabled NotFoundProvider"
+        android:text="enable all Provider"
         android:textAllCaps="false" />
 
     <Button
@@ -21,4 +21,39 @@
         android:layout_height="wrap_content"
         android:text="crash"
         android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btStartProvider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="StartProvider"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btStartProvider1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="StartNotFoundProvider1"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="clearApplicationUserData"
+        android:textAllCaps="false" />
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btInitProvider"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="initProvider"-->
+    <!--        android:textAllCaps="false" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btLoadApk"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="load apk"-->
+    <!--        android:textAllCaps="false" />-->
 </LinearLayout>

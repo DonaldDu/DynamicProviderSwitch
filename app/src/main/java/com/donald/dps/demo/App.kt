@@ -8,14 +8,13 @@ import com.donald.dps.lib.DynamicProviderSwitch
 
 class App : Application() {
     override fun attachBaseContext(base: Context) {
+        providerSwitch = DynamicProviderSwitch(base, true)
         super.attachBaseContext(base)
-//        InstrumentationDelegate()
     }
 
     override fun onCreate() {
         Log.i(TAG, "Application onCreate")
         super.onCreate()
-        providerSwitch = DynamicProviderSwitch(this, true)
         providerSwitch!!.startDynamicProviders()
     }
 
