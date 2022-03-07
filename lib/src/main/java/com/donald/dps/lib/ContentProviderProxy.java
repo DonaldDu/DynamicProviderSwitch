@@ -45,7 +45,7 @@ public class ContentProviderProxy extends ContentProvider {
             realContentProvider = (ContentProvider) classLoader.loadClass(realContentProviderClassName).newInstance();
             realContentProvider.attachInfo(getContext(), providerInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+            if (!(e instanceof ClassNotFoundException)) e.printStackTrace();
         }
     }
 
