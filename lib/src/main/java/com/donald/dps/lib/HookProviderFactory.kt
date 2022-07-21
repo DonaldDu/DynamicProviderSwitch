@@ -11,12 +11,12 @@ open class HookProviderFactory : AppComponentFactory() {
     private val TAG = "ProviderSwitch"
     override fun instantiateProviderCompat(cl: ClassLoader, className: String): ContentProvider {
         if (BuildConfig.DEBUG) Log.i(TAG, "instantiateProviderCompat $className")
-        val emptyProvider = try {
-            (Class.forName(className).name != className)
+        val dynamicProvider = try {
+            Class.forName(className).name.isEmpty()
         } catch (e: ClassNotFoundException) {
             true
         }
-        return if (emptyProvider) {
+        return if (dynamicProvider) {
             if (BuildConfig.DEBUG) Log.i(TAG, "ContentProviderProxy $className")
             super.instantiateProviderCompat(cl, ContentProviderProxy::class.java.name)
         } else {
