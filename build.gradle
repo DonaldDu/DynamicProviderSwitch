@@ -1,5 +1,6 @@
 buildscript {
     ext.kotlin_version = "1.5.31"
+    ext.libV = "1.5.31"
     repositories {
         google()
         mavenCentral()
@@ -16,10 +17,11 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven { url = file("${rootProject.buildDir}/repo") }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-apply from: "https://gitee.com/DonaldDu/OpenGradleScript/raw/master/mavenPublish.gradle"
+//apply from: "https://gitee.com/DonaldDu/OpenGradleScript/raw/master/mavenPublish.gradle"
