@@ -30,7 +30,7 @@ android {
         }
     }
 }
-mavenPublish("com.github.DonaldDu.DynamicProviderSwitch:Lib:10.0.0")
+mavenPublish("com.github.DonaldDu:DynamicProviderSwitch:10.0.0")
 dependencies {
     compileOnly 'androidx.core:core-ktx:1.7.0'
     androidTestImplementation 'androidx.core:core-ktx:1.7.0'
