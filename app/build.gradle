@@ -44,8 +44,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-//    implementation project(path: ':lib')
-    implementation "com.github.DonaldDu:DynamicProviderSwitch:$libV"
+    implementation project(path: ':lib')
+//    implementation "com.github.DonaldDu:DynamicProviderSwitch:$libV"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
