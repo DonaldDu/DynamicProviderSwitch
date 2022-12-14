@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
 }
 
-apply plugin: 'maven-publish'
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -31,46 +30,17 @@ android {
         }
     }
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-        }
-    }
 }
+
+mavenPublish("com.github.DonaldDu:DynamicProviderSwitch:10.0.0")
 
 afterEvaluate {
     publishing {
-        def gav = "com.github.DonaldDu:DynamicProviderSwitch:$libV"
-        publications {
-            release(MavenPublication) {
-//            if (components.findByName('release') != null) {
-                def release = components['release']
-                if (release != null) {
-                    println 'release with components.release'
-                    from(release)
-                } else {
-                    println 'release with release.aar'
-                    artifact("$buildDir/outputs/aar/${project.name}-release.aar")
-                    with(pomDependencies)
-                }
-//            artifact(sourceJar)
-                def data = gav.split(":")
-                groupId = data[0]
-                artifactId = data[1]
-                version = data[2]
-            }
-        }
         repositories {
             maven { url = file("${rootProject.buildDir}/repo") }
         }
     }
 }
-
-//task sourceJar(type: Jar, dependsOn: 'assembleRelease') {
-//    from android.sourceSets.main.java.srcDirs
-//    classifier 'sources'
-//}
-//mavenPublish("com.github.DonaldDu.DynamicProviderSwitch:Lib:10.0.0")
 dependencies {
     compileOnly 'androidx.core:core-ktx:1.7.0'
     androidTestImplementation 'androidx.core:core-ktx:1.7.0'
