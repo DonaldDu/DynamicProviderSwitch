@@ -55,29 +55,23 @@ internal object HookUtil {
         }
     }
 
+    @SuppressLint("PrivateApi")
     @Throws(Exception::class)
     private fun attachContext() {
-        @SuppressLint("PrivateApi")
         val activityThreadClass = Class.forName("android.app.ActivityThread")
-
-        @SuppressLint("DiscouragedPrivateApi")
-        val currentActivityThreadMethod = activityThreadClass.getDeclaredMethod("currentActivityThread")
-        currentActivityThreadMethod.isAccessible = true
+        val currentActivityThreadMethod = activityThreadClass.method("currentActivityThread")
         currentActivityThread = currentActivityThreadMethod.invoke(null)
         hookInstallContentProvider(activityThreadClass)
     }
 
     @Throws(Exception::class)
     private fun hookInstallContentProvider(activityThreadClass: Class<*>) {
-        val appDataField = activityThreadClass.getDeclaredField("mBoundApplication")
-        appDataField.isAccessible = true
-        val appData = appDataField[currentActivityThread]
-        val providersField = appData.javaClass.getDeclaredField("providers") //仅包含enabled provider
-        providersField.isAccessible = true
+        val appDataField = activityThreadClass.field("mBoundApplication")
+        val appData = appDataField.get(currentActivityThread)
+        val providersField = appData.javaClass.field("providers") //仅包含enabled provider
         @Suppress("UNCHECKED_CAST")
-        providers = providersField[appData] as MutableList<ProviderInfo>
-        providersField[appData] = null //清空provider，避免有些sdk通过provider来初始化
-        installContentProvidersMethod = activityThreadClass.getDeclaredMethod("installContentProviders", Context::class.java, MutableList::class.java)
-        installContentProvidersMethod!!.isAccessible = true
+        providers = providersField.get(appData) as MutableList<ProviderInfo>
+        providersField.set(appData, null)//清空provider，避免有些sdk通过provider来初始化
+        installContentProvidersMethod = activityThreadClass.method("installContentProviders", Context::class, MutableList::class)
     }
 }
