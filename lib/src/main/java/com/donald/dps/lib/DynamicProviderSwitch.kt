@@ -14,7 +14,8 @@ import android.util.Log
 open class DynamicProviderSwitch(
     private val context: Context,
     private val log: Boolean,
-    filter: ((ProviderInfo) -> Boolean)? = null
+    filter: ((ProviderInfo) -> Boolean)? = null,
+    compatProvider: Boolean = true,
 ) {
     private val TAG = "ProviderSwitch"
     private val filter: (ProviderInfo) -> Boolean = filter ?: {
@@ -23,7 +24,7 @@ open class DynamicProviderSwitch(
     }
 
     init {
-        compatDynamicProvider()
+        if (compatProvider) compatDynamicProvider()
     }
 
     private val providers = context.providers()
