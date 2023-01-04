@@ -55,7 +55,7 @@ public class ContentProviderProxy extends ContentProvider {
         return true;
     }
 
-    protected boolean checkRealContentProviderInstallStatus() {
+    protected boolean isRealProviderOK() {
         if (realContentProvider != null) {
             return true;
         } else {
@@ -74,7 +74,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             realContentProvider.onConfigurationChanged(newConfig);
         }
     }
@@ -82,7 +82,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.query(uri, projection, selection, selectionArgs, sortOrder);
         }
         return null;
@@ -92,7 +92,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable Bundle queryArgs, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.query(uri, projection, queryArgs, cancellationSignal);
         }
         return super.query(uri, projection, queryArgs, cancellationSignal);
@@ -102,7 +102,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
         }
         return super.query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
@@ -111,7 +111,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.getType(uri);
         }
         return null;
@@ -120,7 +120,7 @@ public class ContentProviderProxy extends ContentProvider {
     @NonNull
     @Override
     public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.applyBatch(operations);
         }
         return super.applyBatch(operations);
@@ -140,7 +140,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Uri uncanonicalize(@NonNull Uri url) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.uncanonicalize(url);
         }
         return super.uncanonicalize(url);
@@ -149,7 +149,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openAssetFile(uri, mode);
         }
         return super.openAssetFile(uri, mode);
@@ -159,7 +159,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openAssetFile(uri, mode, signal);
         }
         return super.openAssetFile(uri, mode, signal);
@@ -169,7 +169,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openTypedAssetFile(@NonNull Uri uri, @NonNull String mimeTypeFilter, @Nullable Bundle opts) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openTypedAssetFile(uri, mimeTypeFilter, opts);
         }
         return super.openTypedAssetFile(uri, mimeTypeFilter, opts);
@@ -179,7 +179,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public AssetFileDescriptor openTypedAssetFile(@NonNull Uri uri, @NonNull String mimeTypeFilter, @Nullable Bundle opts, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openTypedAssetFile(uri, mimeTypeFilter, opts, signal);
         }
         return super.openTypedAssetFile(uri, mimeTypeFilter, opts, signal);
@@ -188,7 +188,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openFile(uri, mode);
         }
         return super.openFile(uri, mode);
@@ -198,7 +198,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode, @Nullable CancellationSignal signal) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openFile(uri, mode, signal);
         }
         return super.openFile(uri, mode, signal);
@@ -207,7 +207,7 @@ public class ContentProviderProxy extends ContentProvider {
     @NonNull
     @Override
     public <T> ParcelFileDescriptor openPipeHelper(@NonNull Uri uri, @NonNull String mimeType, @Nullable Bundle opts, @Nullable T args, @NonNull PipeDataWriter<T> func) throws FileNotFoundException {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.openPipeHelper(uri, mimeType, opts, args, func);
         }
         return super.openPipeHelper(uri, mimeType, opts, args, func);
@@ -216,7 +216,7 @@ public class ContentProviderProxy extends ContentProvider {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean refresh(Uri uri, @Nullable Bundle args, @Nullable CancellationSignal cancellationSignal) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.refresh(uri, args, cancellationSignal);
         }
         return super.refresh(uri, args, cancellationSignal);
@@ -225,7 +225,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.call(method, arg, extras);
         }
         return super.call(method, arg, extras);
@@ -234,7 +234,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Nullable
     @Override
     public String[] getStreamTypes(@NonNull Uri uri, @NonNull String mimeTypeFilter) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.getStreamTypes(uri, mimeTypeFilter);
         }
         return super.getStreamTypes(uri, mimeTypeFilter);
@@ -244,7 +244,7 @@ public class ContentProviderProxy extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (BuildConfig.DEBUG) Log.i(TAG, "Proxy insert ->authority " + providerInfo.authority);
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.insert(uri, values);
         }
         return null;
@@ -268,7 +268,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.bulkInsert(uri, values);
         }
         return super.bulkInsert(uri, values);
@@ -276,7 +276,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.delete(uri, selection, selectionArgs);
         }
         return 0;
@@ -284,7 +284,7 @@ public class ContentProviderProxy extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        if (checkRealContentProviderInstallStatus()) {
+        if (isRealProviderOK()) {
             return realContentProvider.update(uri, values, selection, selectionArgs);
         }
         return 0;
