@@ -14,7 +14,7 @@ import java.lang.reflect.Method
  * https://juejin.cn/post/7007338307075964942
  */
 internal object HookUtil {
-    private lateinit var providers: MutableList<ProviderInfo>
+    private var providers: MutableList<ProviderInfo>? = null
     private var installContentProvidersMethod: Method? = null
     private var currentActivityThread: Any? = null
 
@@ -36,6 +36,7 @@ internal object HookUtil {
     }
 
     private fun initProvider(context: Context) {
+        if (providers.isNullOrEmpty()) return
         try {
             installContentProvidersMethod!!.invoke(currentActivityThread, context, providers)
         } catch (e: Exception) {
@@ -44,8 +45,8 @@ internal object HookUtil {
     }
 
     private fun disableDynamicProviders(context: Context) {
-        if (providers.isEmpty()) return
-        val iterator = providers.iterator()
+        if (providers.isNullOrEmpty()) return
+        val iterator = providers!!.iterator()
         while (iterator.hasNext()) {
             val provider = iterator.next()
             if (provider.isDisabled) {
@@ -70,7 +71,7 @@ internal object HookUtil {
         val appData = appDataField.get(currentActivityThread)
         val providersField = appData.javaClass.field("providers") //仅包含enabled provider
         @Suppress("UNCHECKED_CAST")
-        providers = providersField.get(appData) as MutableList<ProviderInfo>
+        providers = providersField.get(appData) as MutableList<ProviderInfo>?
         providersField.set(appData, null)//清空provider，避免有些sdk通过provider来初始化
         installContentProvidersMethod = activityThreadClass.method("installContentProviders", Context::class, MutableList::class)
     }
