@@ -2,3 +2,4 @@ include ':app'
 include ':lib'
 //include ':Plugin'
 rootProject.name = "DynamicProviderSwitch"
+include ':delay'

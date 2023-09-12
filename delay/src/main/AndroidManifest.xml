@@ -1,37 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.donald.dps.demo">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".App"
         android:allowBackup="true"
-        android:appComponentFactory="com.donald.dps.lib.HookProviderFactory"
+        android:name=".App"
+        android:appComponentFactory="com.donald.dps.lib.DelayProviderFactory"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DynamicProviderSwitch"
         tools:replace="android:appComponentFactory">
         <provider
-            android:name=".OkProvider"
-            android:authorities="${applicationId}.a"
-            android:exported="false" />
-
-        <provider
-            android:name=".NotFoundProvider1"
-            android:authorities="${applicationId}.a1"
+            android:name=".MyDerectContentProvider"
+            android:authorities="Derect.${applicationId}"
             android:enabled="true"
-            android:initOrder="1"
-            android:exported="false" />
+            android:exported="true" />
         <provider
-            android:name=".NotFoundProvider2"
-            android:authorities="${applicationId}.a2"
-            android:enabled="false"
-            android:exported="false" />
-        <provider
-            android:name=".NotFoundProvider3"
-            android:authorities="${applicationId}.a3"
+            android:name=".MyDelayContentProvider"
+            android:authorities="fa.${applicationId}"
             android:enabled="true"
             android:exported="false" />
 

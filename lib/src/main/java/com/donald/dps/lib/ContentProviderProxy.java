@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ContentProviderProxy extends ContentProvider {
-    private static final String TAG = "ContentProviderProxy";
+    static final String TAG = "ContentProviderProxy";
     private ContentProvider realContentProvider;
     private ProviderInfo providerInfo;
     public String realContentProviderClassName;
@@ -37,7 +37,7 @@ public class ContentProviderProxy extends ContentProvider {
         return realContentProvider;
     }
 
-    void createAndActivateRealContentProvider(ClassLoader classLoader) {
+    protected void createAndActivateRealContentProvider(ClassLoader classLoader) {
         if (realContentProviderClassName == null) {
             throw new IllegalArgumentException("Unable to read real content-provider for " + getClass().getName());
         }

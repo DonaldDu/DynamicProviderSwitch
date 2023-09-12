@@ -1,5 +1,8 @@
 package com.donald.dps.lib
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -23,4 +26,16 @@ fun Class<*>.method(name: String, vararg parameterTypes: KClass<*>): Method {
     val method = getDeclaredMethod(name, *types)
     method.isAccessible = true
     return method
+}
+
+internal fun runInIoScope(block: suspend CoroutineScope.() -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        block()
+    }
+}
+
+internal fun runInMainScope(block: suspend CoroutineScope.() -> Unit) {
+    CoroutineScope(Dispatchers.Main).launch {
+        block()
+    }
 }
